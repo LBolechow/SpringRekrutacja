@@ -1,0 +1,45 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.4'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'pl.lukbol'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// WireMock z wersją standalone (unikamy konfliktów z Jetty Spring Boota)
+	testImplementation('com.github.tomakehurst:wiremock-standalone:3.0.1') {
+		exclude group: 'org.eclipse.jetty' // Wyklucz domyślne zależności Jetty
+	}
+
+	testImplementation 'org.skyscreamer:jsonassert:1.5.1'
+	// Usuń jawną deklarację jakarta.servlet-api - jest dostarczany przez Spring Boot
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
